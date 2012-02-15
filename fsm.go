@@ -4,14 +4,14 @@ import "fmt"
 
 const (
   OnEntry = "ON_ENTRY"
-  OnExit = "ON_EXIT"
+  OnExit  = "ON_EXIT"
   Default = "DEFAULT"
 )
 
 type Transition struct {
-  from string
-  event string
-  to string
+  from   string
+  event  string
+  to     string
   action string
 }
 
@@ -20,8 +20,8 @@ type Delegate interface {
 }
 
 type StateMachine struct {
-  delegate Delegate
-  transitions []Transition
+  delegate     Delegate
+  transitions  []Transition
   currentState *Transition
 }
 
