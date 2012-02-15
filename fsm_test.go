@@ -33,6 +33,8 @@ func TestTokenMachine(t *testing.T) {
 		Transition{From: "unlocked", Event: OnExit, Action: "exit"},
 	)
 
+	var e error
+
 	if !(tm.currentState.From == "locked") {
 		t.Errorf("state machine failure")
 	}
@@ -43,7 +45,10 @@ func TestTokenMachine(t *testing.T) {
 		t.Errorf("state machine failure")
 	}
 
-	tm.Process("coin", 'i')
+	e = tm.Process("coin", 'i')
+	if !(e == nil) {
+		t.Errorf("state machine failure")
+	}
 	if !(tm.currentState.From == "unlocked") {
 		t.Errorf("state machine failure")
 	}
@@ -54,7 +59,24 @@ func TestTokenMachine(t *testing.T) {
 		t.Errorf("state machine failure")
 	}
 
-	tm.Process("turn", 'q')
+	e = tm.Process("foobar", 'i')
+	if !(e != nil && e.Error() == "state machine error: cannot find transition for event [foobar] when in state [unlocked]\n") {
+		t.Errorf("state machine failure")
+	}
+	if !(tm.currentState.From == "unlocked") {
+		t.Errorf("state machine failure")
+	}
+	if !(ctx.count == 1) {
+		t.Errorf("state machine failure")
+	}
+	if !(ctx.char == 'i') {
+		t.Errorf("state machine failure")
+	}
+
+	e = tm.Process("turn", 'q')
+	if !(e == nil) {
+		t.Errorf("state machine failure")
+	}
 	if !(tm.currentState.From == "locked") {
 		t.Errorf("state machine failure")
 	}
@@ -65,7 +87,10 @@ func TestTokenMachine(t *testing.T) {
 		t.Errorf("state machine failure, %d", ctx.entered)
 	}
 
-	tm.Process("random", 'p')
+	e = tm.Process("random", 'p')
+	if !(e == nil) {
+		t.Errorf("state machine failure")
+	}
 	if !(tm.currentState.From == "locked") {
 		t.Errorf("state machine failure")
 	}

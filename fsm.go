@@ -21,6 +21,7 @@
 // For a more complete usage, see the test file.
 package fsm
 
+import "errors"
 import "fmt"
 
 const (
@@ -54,14 +55,14 @@ func NewStateMachine(delegate Delegate, transitions ...Transition) StateMachine 
 	return StateMachine{delegate: delegate, transitions: transitions, currentState: &transitions[0]}
 }
 
-func (m *StateMachine) Process(event string, args ...interface{}) {
+func (m *StateMachine) Process(event string, args ...interface{}) error {
 	trans := m.findTransMatching(m.currentState.From, event)
 	if trans == nil {
 		trans = m.findTransMatching(m.currentState.From, Default)
 	}
 
 	if trans == nil {
-		panic(fmt.Sprintf("state machine error: cannot find transition for event [%s] when in state [%s]\n", event, m.currentState.From))
+		return errors.New(fmt.Sprintf("state machine error: cannot find transition for event [%s] when in state [%s]\n", event, m.currentState.From))
 	}
 
 	changing_states := trans.From != trans.To
@@ -79,6 +80,8 @@ func (m *StateMachine) Process(event string, args ...interface{}) {
 	}
 
 	m.currentState = m.findState(trans.To)
+
+	return nil
 }
 
 func (m *StateMachine) findTransMatching(fromState string, event string) *Transition {
