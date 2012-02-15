@@ -26,28 +26,28 @@ func TestTokenMachine(t *testing.T) {
   var ctx testTokenMachineContext
 
   tm := NewStateMachine(&ctx,
-      Transition{ from: "locked",    event: "coin",     to: "unlocked",  action: "token_inc" },
-      Transition{ from: "locked",    event: OnEntry,                     action: "enter" },
-      Transition{ from: "locked",    event: Default,    to: "locked",    action: "default" },
-      Transition{ from: "unlocked",  event: "turn",     to: "locked",    },
-      Transition{ from: "unlocked",  event: OnExit,                      action: "exit" },
+      Transition{ From: "locked",    Event: "coin",     To: "unlocked",  Action: "token_inc" },
+      Transition{ From: "locked",    Event: OnEntry,                     Action: "enter" },
+      Transition{ From: "locked",    Event: Default,    To: "locked",    Action: "default" },
+      Transition{ From: "unlocked",  Event: "turn",     To: "locked",    },
+      Transition{ From: "unlocked",  Event: OnExit,                      Action: "exit" },
       )
 
-  if ! (tm.currentState.from == "locked") { t.Errorf("state machine failure") }
+  if ! (tm.currentState.From == "locked") { t.Errorf("state machine failure") }
   if ! (ctx.count == 0) { t.Errorf("state machine failure") }
   if ! (ctx.char == 0) { t.Errorf("state machine failure") }
 
   tm.Process("coin", 'i')
-  if ! (tm.currentState.from == "unlocked") { t.Errorf("state machine failure") }
+  if ! (tm.currentState.From == "unlocked") { t.Errorf("state machine failure") }
   if ! (ctx.count == 1) { t.Errorf("state machine failure") }
   if ! (ctx.char == 'i') { t.Errorf("state machine failure") }
 
   tm.Process("turn", 'q')
-  if ! (tm.currentState.from == "locked") { t.Errorf("state machine failure") }
+  if ! (tm.currentState.From == "locked") { t.Errorf("state machine failure") }
   if ! (ctx.count == 1) { t.Errorf("state machine failure") }
   if ! (ctx.entered == 8) { t.Errorf("state machine failure, %d", ctx.entered) }
 
   tm.Process("random", 'p')
-  if ! (tm.currentState.from == "locked") { t.Errorf("state machine failure") }
+  if ! (tm.currentState.From == "locked") { t.Errorf("state machine failure") }
   if ! (ctx.entered == 88) { t.Errorf("state machine failure, %d", ctx.entered) }
 }
