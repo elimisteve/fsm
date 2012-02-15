@@ -33,7 +33,7 @@ func TestTokenMachine(t *testing.T) {
 		Transition{From: "unlocked", Event: OnExit, Action: "exit"},
 	)
 
-	var e error
+	var e Error
 
 	if !(tm.currentState.From == "locked") {
 		t.Errorf("state machine failure")
@@ -60,7 +60,16 @@ func TestTokenMachine(t *testing.T) {
 	}
 
 	e = tm.Process("foobar", 'i')
-	if !(e != nil && e.Error() == "state machine error: cannot find transition for event [foobar] when in state [unlocked]\n") {
+	if !(e != nil) {
+		t.Errorf("state machine failure")
+	}
+	if !(e.BadEvent() == "foobar") {
+		t.Errorf("state machine failure")
+	}
+	if !(e.InState() == "unlocked") {
+		t.Errorf("state machine failure")
+	}
+	if !(e.Error() == "state machine error: cannot find transition for event [foobar] when in state [unlocked]\n") {
 		t.Errorf("state machine failure")
 	}
 	if !(tm.currentState.From == "unlocked") {

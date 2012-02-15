@@ -1,6 +1,5 @@
-// Finite State Machines
+// Finite State Machines, in idiomatic Go1.
 //
-// Suitable for use anytime, anywhere. Bring it.
 // Here is the basic API:
 //
 //     sm := NewStateMachine(&delegate,
@@ -21,7 +20,6 @@
 // For a more complete usage, see the test file.
 package fsm
 
-import "errors"
 import "fmt"
 
 const (
@@ -37,7 +35,7 @@ type Transition struct {
 	Action string
 }
 
-// `action' corresponds to what's in a Transition
+// 'action' corresponds to what's in a Transition
 type Delegate interface {
 	StateMachineCallback(action string, args []interface{})
 }
@@ -48,6 +46,30 @@ type StateMachine struct {
 	currentState *Transition
 }
 
+// Satisfies the built-in interface 'error'
+type Error interface {
+	error
+	BadEvent() string
+	InState() string
+}
+
+type smError struct {
+	badEvent string
+	inState  string
+}
+
+func (e smError) Error() string {
+	return fmt.Sprintf("state machine error: cannot find transition for event [%s] when in state [%s]\n", e.badEvent, e.inState)
+}
+
+func (e smError) InState() string {
+	return e.inState
+}
+
+func (e smError) BadEvent() string {
+	return e.badEvent
+}
+
 // Use this in conjunction with Transition literals, keeping
 // in mind that To may be omitted for actions, and Action may
 // always be omitted. See the overview above for an example.
@@ -55,14 +77,14 @@ func NewStateMachine(delegate Delegate, transitions ...Transition) StateMachine 
 	return StateMachine{delegate: delegate, transitions: transitions, currentState: &transitions[0]}
 }
 
-func (m *StateMachine) Process(event string, args ...interface{}) error {
+func (m *StateMachine) Process(event string, args ...interface{}) Error {
 	trans := m.findTransMatching(m.currentState.From, event)
 	if trans == nil {
 		trans = m.findTransMatching(m.currentState.From, Default)
 	}
 
 	if trans == nil {
-		return errors.New(fmt.Sprintf("state machine error: cannot find transition for event [%s] when in state [%s]\n", event, m.currentState.From))
+		return smError{event, m.currentState.From}
 	}
 
 	changing_states := trans.From != trans.To
