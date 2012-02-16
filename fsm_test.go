@@ -35,75 +35,75 @@ func TestTokenMachine(t *testing.T) {
 
 	var e Error
 
-	if !(tm.currentState.From == "locked") {
+	if tm.currentState.From != "locked" {
 		t.Errorf("state machine failure")
 	}
-	if !(ctx.count == 0) {
+	if ctx.count != 0 {
 		t.Errorf("state machine failure")
 	}
-	if !(ctx.char == 0) {
+	if ctx.char != 0 {
 		t.Errorf("state machine failure")
 	}
 
 	e = tm.Process("coin", 'i')
-	if !(e == nil) {
+	if e != nil {
 		t.Errorf("state machine failure")
 	}
-	if !(tm.currentState.From == "unlocked") {
+	if tm.currentState.From != "unlocked" {
 		t.Errorf("state machine failure")
 	}
-	if !(ctx.count == 1) {
+	if ctx.count != 1 {
 		t.Errorf("state machine failure")
 	}
-	if !(ctx.char == 'i') {
+	if ctx.char != 'i' {
 		t.Errorf("state machine failure")
 	}
 
 	e = tm.Process("foobar", 'i')
-	if !(e != nil) {
+	if e != nil) {
 		t.Errorf("state machine failure")
 	}
-	if !(e.BadEvent() == "foobar") {
+	if !(e.BadEvent() != "foobar" {
 		t.Errorf("state machine failure")
 	}
-	if !(e.InState() == "unlocked") {
+	if e.InState() != "unlocked" {
 		t.Errorf("state machine failure")
 	}
-	if !(e.Error() == "state machine error: cannot find transition for event [foobar] when in state [unlocked]\n") {
+	if e.Error() != "state machine error: cannot find transition for event [foobar] when in state [unlocked]\n" {
 		t.Errorf("state machine failure")
 	}
-	if !(tm.currentState.From == "unlocked") {
+	if tm.currentState.From != "unlocked" {
 		t.Errorf("state machine failure")
 	}
-	if !(ctx.count == 1) {
+	if ctx.count != 1 {
 		t.Errorf("state machine failure")
 	}
-	if !(ctx.char == 'i') {
+	if ctx.char != 'i' {
 		t.Errorf("state machine failure")
 	}
 
 	e = tm.Process("turn", 'q')
-	if !(e == nil) {
+	if e != nil {
 		t.Errorf("state machine failure")
 	}
-	if !(tm.currentState.From == "locked") {
+	if tm.currentState.From != "locked" {
 		t.Errorf("state machine failure")
 	}
-	if !(ctx.count == 1) {
+	if ctx.count != 1 {
 		t.Errorf("state machine failure")
 	}
-	if !(ctx.entered == 8) {
+	if ctx.entered != 8 {
 		t.Errorf("state machine failure, %d", ctx.entered)
 	}
 
 	e = tm.Process("random", 'p')
-	if !(e == nil) {
+	if e != nil {
 		t.Errorf("state machine failure")
 	}
-	if !(tm.currentState.From == "locked") {
+	if tm.currentState.From != "locked" {
 		t.Errorf("state machine failure")
 	}
-	if !(ctx.entered == 88) {
+	if ctx.entered != 88 {
 		t.Errorf("state machine failure, %d", ctx.entered)
 	}
 }
